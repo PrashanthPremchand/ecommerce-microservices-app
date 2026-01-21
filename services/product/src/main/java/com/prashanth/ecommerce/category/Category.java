@@ -15,11 +15,14 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Category {
+
     @Id
     @GeneratedValue
     Integer id;
     String name;
     String description;
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     List<Product> products;
+
 }

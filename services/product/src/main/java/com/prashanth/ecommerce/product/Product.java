@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Product {
+
     @Id
     @GeneratedValue
     Integer id;
@@ -22,7 +23,9 @@ public class Product {
     String description;
     double availableQuantity;
     BigDecimal price;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
+
 }

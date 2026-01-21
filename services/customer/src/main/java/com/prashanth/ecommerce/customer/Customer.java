@@ -13,10 +13,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Customer {
+
     @Id
     String id;
     String firstName;
     String lastName;
     String email;
     Address address;
+
 }
