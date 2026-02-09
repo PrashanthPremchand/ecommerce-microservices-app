@@ -16,10 +16,23 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.type.mapping: orderConfirmation:com.prashanth.ecommerce.kafka.OrderConfirmation
+
 server:
   port: 8070
+
 application:
   config:
     customer-url: http://localhost:8222/api/v1/customers
     payment-url: http://localhost:8222/api/v1/payments
     product-url: http://localhost:8222/api/v1/products
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      orderService:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
