@@ -15,4 +15,4 @@ COPY --from=build /build/target/order-*.jar app.jar
 
 EXPOSE 8070
 
-ENTRYPOINT ["java","-jar","-Dspring.profiles.active=${PROFILE}","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

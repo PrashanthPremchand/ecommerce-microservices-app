@@ -18,4 +18,4 @@ EXPOSE 8222
 
 ENV JWT_SECRET=${JWT_SECRET}
 
-ENTRYPOINT ["java","-jar","-Dspring.profiles.active=${PROFILE}","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
