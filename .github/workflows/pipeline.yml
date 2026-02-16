@@ -31,39 +31,39 @@ jobs:
           cd services/config-server
           mvn clean compile
 
-      - name: Compile discovery-server
+      - name: Compile discovery
         run: |
-          cd services/discovery-server
+          cd services/discovery
           mvn clean compile
 
-      - name: Compile gateway-service
+      - name: Compile gateway
         run: |
-          cd services/gateway-service
+          cd services/gateway
           mvn clean compile
 
-      - name: Compile customer-service
+      - name: Compile customer
         run: |
-          cd services/customer-service
+          cd services/customer
           mvn clean compile
 
-      - name: Compile product-service
+      - name: Compile product
         run: |
-          cd services/product-service
+          cd services/product
           mvn clean compile
 
-      - name: Compile order-service
+      - name: Compile order
         run: |
-          cd services/order-service
+          cd services/order
           mvn clean compile
 
-      - name: Compile payment-service
+      - name: Compile payment
         run: |
-          cd services/payment-service
+          cd services/payment
           mvn clean compile
 
-      - name: Compile notification-service
+      - name: Compile notification
         run: |
-          cd services/notification-service
+          cd services/notification
           mvn clean compile
 
   unit-tests:
@@ -87,39 +87,39 @@ jobs:
           cd services/config-server
           mvn clean test
 
-      - name: Run tests - discovery-server
+      - name: Run tests - discovery
         run: |
-          cd services/discovery-server
+          cd services/discovery
           mvn clean test
 
-      - name: Run tests - gateway-service
+      - name: Run tests - gateway
         run: |
-          cd services/gateway-service
+          cd services/gateway
           mvn clean test
 
-      - name: Run tests - customer-service
+      - name: Run tests - customer
         run: |
-          cd services/customer-service
+          cd services/customer
           mvn clean test
 
-      - name: Run tests - product-service
+      - name: Run tests - product
         run: |
-          cd services/product-service
+          cd services/product
           mvn clean test
 
-      - name: Run tests - order-service
+      - name: Run tests - order
         run: |
-          cd services/order-service
+          cd services/order
           mvn clean test
 
-      - name: Run tests - payment-service
+      - name: Run tests - payment
         run: |
-          cd services/payment-service
+          cd services/payment
           mvn clean test
 
-      - name: Run tests - notification-service
+      - name: Run tests - notification
         run: |
-          cd services/notification-service
+          cd services/notification
           mvn clean test
 
   build-and-push:
@@ -152,65 +152,65 @@ jobs:
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract discovery-server version
+      - name: Extract discovery version
         id: extract_discovery_version
         run: |
-          cd services/discovery-server
+          cd services/discovery
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract gateway-service version
+      - name: Extract gateway version
         id: extract_gateway_version
         run: |
-          cd services/gateway-service
+          cd services/gateway
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract customer-service version
+      - name: Extract customer version
         id: extract_customer_version
         run: |
-          cd services/customer-service
+          cd services/customer
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract product-service version
+      - name: Extract product version
         id: extract_product_version
         run: |
-          cd services/product-service
+          cd services/product
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract order-service version
+      - name: Extract order version
         id: extract_order_version
         run: |
-          cd services/order-service
+          cd services/order
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract payment-service version
+      - name: Extract payment version
         id: extract_payment_version
         run: |
-          cd services/payment-service
+          cd services/payment
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Extract notification-service version
+      - name: Extract notification version
         id: extract_notification_version
         run: |
-          cd services/notification-service
+          cd services/notification
           VERSION=$(mvn help:evaluate -Dexpression="project.version" -q -DforceStdout --non-recursive | tr -d '\r\n[:space:]')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build all JAR files
         run: |
           cd services/config-server && mvn clean package -DskipTests && cd ../..
-          cd services/discovery-server && mvn clean package -DskipTests && cd ../..
-          cd services/gateway-service && mvn clean package -DskipTests && cd ../..
-          cd services/customer-service && mvn clean package -DskipTests && cd ../..
-          cd services/product-service && mvn clean package -DskipTests && cd ../..
-          cd services/order-service && mvn clean package -DskipTests && cd ../..
-          cd services/payment-service && mvn clean package -DskipTests && cd ../..
-          cd services/notification-service && mvn clean package -DskipTests && cd ../..
+          cd services/discovery && mvn clean package -DskipTests && cd ../..
+          cd services/gateway && mvn clean package -DskipTests && cd ../..
+          cd services/customer && mvn clean package -DskipTests && cd ../..
+          cd services/product && mvn clean package -DskipTests && cd ../..
+          cd services/order && mvn clean package -DskipTests && cd ../..
+          cd services/payment && mvn clean package -DskipTests && cd ../..
+          cd services/notification && mvn clean package -DskipTests && cd ../..
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -228,71 +228,71 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/config-server:${{ steps.extract_config_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/config-server:latest
 
-      - name: Build and Push discovery-server
+      - name: Build and Push discovery
         uses: docker/build-push-action@v5
         with:
-          context: ./services/discovery-server
-          file: ./services/discovery-server/Dockerfile
+          context: ./services/discovery
+          file: ./services/discovery/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/discovery-server:${{ steps.extract_discovery_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/discovery-server:latest
 
-      - name: Build and Push gateway-service
+      - name: Build and Push gateway
         uses: docker/build-push-action@v5
         with:
-          context: ./services/gateway-service
-          file: ./services/gateway-service/Dockerfile
+          context: ./services/gateway
+          file: ./services/gateway/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/gateway-service:${{ steps.extract_gateway_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/gateway-service:latest
 
-      - name: Build and Push customer-service
+      - name: Build and Push customer
         uses: docker/build-push-action@v5
         with:
-          context: ./services/customer-service
-          file: ./services/customer-service/Dockerfile
+          context: ./services/customer
+          file: ./services/customer/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/customer-service:${{ steps.extract_customer_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/customer-service:latest
 
-      - name: Build and Push product-service
+      - name: Build and Push product
         uses: docker/build-push-action@v5
         with:
-          context: ./services/product-service
-          file: ./services/product-service/Dockerfile
+          context: ./services/product
+          file: ./services/product/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/product-service:${{ steps.extract_product_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/product-service:latest
 
-      - name: Build and Push order-service
+      - name: Build and Push order
         uses: docker/build-push-action@v5
         with:
-          context: ./services/order-service
-          file: ./services/order-service/Dockerfile
+          context: ./services/order
+          file: ./services/order/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/order-service:${{ steps.extract_order_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/order-service:latest
 
-      - name: Build and Push payment-service
+      - name: Build and Push payment
         uses: docker/build-push-action@v5
         with:
-          context: ./services/payment-service
-          file: ./services/payment-service/Dockerfile
+          context: ./services/payment
+          file: ./services/payment/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/payment-service:${{ steps.extract_payment_version.outputs.version }}
             ${{ secrets.DOCKER_USERNAME }}/payment-service:latest
 
-      - name: Build and Push notification-service
+      - name: Build and Push notification
         uses: docker/build-push-action@v5
         with:
-          context: ./services/notification-service
-          file: ./services/notification-service/Dockerfile
+          context: ./services/notification
+          file: ./services/notification/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/notification-service:${{ steps.extract_notification_version.outputs.version }}
