@@ -301,7 +301,7 @@ jobs:
   deploy:
     name: Deploy to Local Server
     runs-on: self-hosted
-    needs: [build-and-push]
+    needs: [ build-and-push ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -310,28 +310,32 @@ jobs:
         shell: powershell
         run: |
           $deployPath = "$env:USERPROFILE\ecommerce-deployment"
-          New-Item -ItemType Directory -Path $deployPath -Force | Out-Null
-          Write-Host "Created deployment folder: $deployPath"
+          if (!(Test-Path $deployPath)) {
+              New-Item -ItemType Directory -Path $deployPath -Force | Out-Null
+          }
+          Write-Host "Deployment folder ready: $deployPath"
 
-      - name: Copy docker-compose file (Windows)
+      - name: Copy deployment files (Windows)
         shell: powershell
         run: |
           $deployPath = "$env:USERPROFILE\ecommerce-deployment"
+          # Copy BOTH the compose file and the initialization script
           Copy-Item "docker-compose.yml" -Destination "$deployPath\docker-compose.yml" -Force
-          Write-Host "Copied docker-compose.yml to $deployPath"
+          Copy-Item "init-db.sql" -Destination "$deployPath\init-db.sql" -Force
+          Write-Host "✅ Copied docker-compose.yml and init-db.sql to $deployPath"
 
-      - name: Stop and remove old containers (Windows)
+      - name: Stop and WIPE old volumes (Windows)
         shell: powershell
         run: |
           $deployPath = "$env:USERPROFILE\ecommerce-deployment"
           Set-Location $deployPath
-          Write-Host "Stopping old containers..."
+          Write-Host "Stopping containers and removing volumes to reset DBs..."
           try {
-            docker compose down --remove-orphans
-            Write-Host "✅ Old containers stopped successfully" -ForegroundColor Green
+            # The -v is CRITICAL. It forces Postgres to run init-db.sql on the next start.
+            docker compose down -v --remove-orphans
+            Write-Host "✅ Old containers and volumes removed" -ForegroundColor Green
           } catch {
-            Write-Host "⚠️ No running containers or error occurred: $_" -ForegroundColor Yellow
-            Write-Host "Continuing with deployment..." -ForegroundColor Yellow
+            Write-Host "⚠️ No previous environment to clean." -ForegroundColor Yellow
           }
 
       - name: Pull latest images (Windows)
@@ -341,9 +345,8 @@ jobs:
         run: |
           $deployPath = "$env:USERPROFILE\ecommerce-deployment"
           Set-Location $deployPath
-          Write-Host "Pulling latest images..."
           docker compose pull
-          Write-Host "Images pulled successfully"
+          Write-Host "✅ Images pulled successfully"
 
       - name: Deploy containers (Windows)
         shell: powershell
@@ -363,21 +366,24 @@ jobs:
           Set-Location $deployPath
           Write-Host "Starting containers..."
           docker compose up -d
-          Write-Host "Containers started"
+          Write-Host "✅ Containers started"
 
-      - name: Wait for services to start (Windows)
+      - name: Wait for database and services (Windows)
         shell: powershell
         run: |
-          Write-Host "Waiting 15 seconds for services to initialize..."
-          Start-Sleep -Seconds 15
-          Write-Host "Services starting up..."
+          Write-Host "Waiting 30 seconds for Postgres to run init-db.sql and services to boot..."
+          # Increased to 30s because creating multiple DBs and starting Config Server takes time
+          Start-Sleep -Seconds 30 
 
       - name: Verify deployment (Windows)
         shell: powershell
         run: |
-          Write-Host "Checking running containers..."
-          docker ps --filter "label=com.docker.compose.project"
-          Write-Host ""
+          $deployPath = "$env:USERPROFILE\ecommerce-deployment"
+          Set-Location $deployPath
+          Write-Host "Checking container status..."
+          docker compose ps
+          Write-Host "Checking if databases exist inside container..."
+          docker exec postgres-sql-bsn psql -U postgres -c "\l"
 
       - name: Check service health (Windows)
         shell: powershell
