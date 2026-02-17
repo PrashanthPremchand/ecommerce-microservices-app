@@ -1,5 +1,6 @@
 package com.prashanth.ecommerce.handler;
 
+import com.prashanth.ecommerce.exception.CustomerAlreadyExistException;
 import com.prashanth.ecommerce.exception.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,13 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CustomerAlreadyExistException.class)
+    public ResponseEntity<String> handle(CustomerAlreadyExistException e){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
 
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<String> handle(CustomerNotFoundException e){
