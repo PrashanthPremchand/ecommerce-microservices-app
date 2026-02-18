@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class JWTUtil {
 
     private Key getSignInKey() {
 
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
 
     }
