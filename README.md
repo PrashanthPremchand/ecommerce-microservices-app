@@ -51,19 +51,56 @@ Controller → Service → Domain → Repository
 
 ## 🏗 Architecture Diagrams
 
-### Monolithic vs Microservices
-
-![Image](https://miro.medium.com/v2/resize%3Afit%3A1400/1%2AaSdnOJNT2UoiaAhy-vuV_Q.png)
-
-![Image](https://miro.medium.com/1%2Axu1Ge_Cew0DHdSU6ETcpLQ.png)
-
 ### Microservices Architecture Used in This Project
 
-![Image](https://spring.io/img/extra/microservices-6.svg)
+```mermaid
+graph TD
+    Client[Client / Postman / Browser]
 
-![Image](https://miro.medium.com/v2/resize%3Afit%3A2000/1%2AFjeBIfFHRDzb8OSckxSN7g.png)
+    Gateway[API Gateway]
+    Config[Config Server]
+    Discovery[Eureka Discovery Server]
 
----
+    Client --> Gateway
+
+    Gateway --> CustomerService[Customer Service]
+    Gateway --> OrderService[Order Service]
+    Gateway --> ProductService[Product Service]
+    Gateway --> PaymentService[Payment Service]
+    Gateway --> NotificationService[Notification Service]
+
+    CustomerService --> CustomerDB[(MongoDB)]
+    OrderService --> OrderDB[(PostgreSQL)]
+    ProductService --> ProductDB[(PostgreSQL)]
+    PaymentService --> PaymentDB[(PostgreSQL)]
+    NotificationService --> MailDev[(MailDev)]
+
+    CustomerService --> Config
+    OrderService --> Config
+    ProductService --> Config
+    PaymentService --> Config
+    NotificationService --> Config
+
+    CustomerService --> Discovery
+    OrderService --> Discovery
+    ProductService --> Discovery
+    PaymentService --> Discovery
+    NotificationService --> Discovery
+
+```
+
+```mermaid
+graph TD
+    OrderService[Order Service]
+    CustomerService[Customer Service]
+    CircuitBreaker[Resilience4j Circuit Breaker]
+    Fallback[Fallback Response]
+
+    OrderService --> CircuitBreaker
+    CircuitBreaker --> CustomerService
+    CircuitBreaker -->|Failure| Fallback
+
+```
 
 ## 🗂 Services Overview
 
@@ -81,11 +118,42 @@ Controller → Service → Domain → Repository
 
 ## 🗄 Database Design (ERD)
 
-![Image](https://landing.moqups.com/img/templates/diagrams/erd/ecommerce-database-diagram.png)
+```mermaid
+graph TD
+    Customer[Customer Document]
 
-![Image](https://microservices.io/i/databaseperservice.png)
+    Customer --> id[_id]
+    Customer --> firstName
+    Customer --> lastName
+    Customer --> email
+    Customer --> address
+    Customer --> createdAt
 
----
+    address --> street
+    address --> city
+    address --> zip
+
+```
+```mermaid
+graph TD
+    Order[Order]
+    OrderItem[Order_Item]
+
+    Order -->|1 to many| OrderItem
+
+    Order --> orderId[id PK]
+    Order --> customerId
+    Order --> status
+    Order --> totalAmount
+    Order --> createdAt
+
+    OrderItem --> itemId[id PK]
+    OrderItem --> orderIdFK[order_id FK]
+    OrderItem --> productId
+    OrderItem --> quantity
+    OrderItem --> price
+
+```
 
 ## 🔐 Security
 
@@ -103,8 +171,8 @@ Each service exposes Swagger UI:
 | Service          | Swagger URL                                                                    |
 | ---------------- | ------------------------------------------------------------------------------ |
 | Customer Service | [http://localhost:8090/swagger-ui.html](http://localhost:8090/swagger-ui.html) |
-| Product Service  | [http://localhost:8091/swagger-ui.html](http://localhost:8091/swagger-ui.html) |
-| Order Service    | [http://localhost:8092/swagger-ui.html](http://localhost:8092/swagger-ui.html) |
+| Product Service  | [http://localhost:8050/swagger-ui.html](http://localhost:8050/swagger-ui.html) |
+| Order Service    | [http://localhost:8070/swagger-ui.html](http://localhost:8070/swagger-ui.html) | 
 
 ---
 
